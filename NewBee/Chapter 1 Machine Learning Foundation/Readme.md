@@ -29,7 +29,7 @@ w[1]\*x[1] + w[2]\*x[2] ..... + w[n]\*x[n] + b = y
   According to the given data, tell what kind of data it is.
 ### Supervised Learning
   Label the training data (Known Features and Classes)
-  |Supervised Algorithm|Regression Type|
+  |Supervised Algorithm|Regression Algorithm|
   |--|--|
   |K-Nearest Neighbor Algorithm |Linear Regression|
   |Naive Bayes Algorithm |Locally weighted regression|
@@ -37,8 +37,22 @@ w[1]\*x[1] + w[2]\*x[2] ..... + w[n]\*x[n] + b = y
   |Decision Tree|Lasso Minimum Regression Coefficient Estimation|
 ### Unspervised Learning
   Unlabled data, while training, module will cluster similar data.
-  |Unspervised Algorithm|Principle|
+  |||
   |--|--|
   |K-Mean|Maximum Expectation Algorithm|
   |DBSCAN|Parzen Window Design|
+  
 # 1.4 Select Suitable Algorithm
+1. If you want to predict the value of the target variable, you can use a supervised learning algorithm. If the target variable is a discrete value, use a classification algorithm. If the target variable is a continuous value, use a regression algorithm.
+
+2. If it is not to predict the value of the target variable, use unsupervised machine learning. If you need to divide the data set into discrete groups, use a clustering algorithm. If you need to estimate the similarity between the data and each group, you need to use density Estimate algorithm.
+
+3. The second thing to consider is the data problem: whether the characteristic value is a discrete variable or a continuous type, whether there are missing values, outliers, etc.
+4. 
+# 1.5 Steps for Machine Learning Development
+1. Collect data:
+2. Prepare to input data: clean data
+3. Analyze the input data
+4. Training algorithm
+5 test algorithm
+6. Use algorithm 
