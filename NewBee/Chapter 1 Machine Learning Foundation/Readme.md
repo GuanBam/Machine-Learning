@@ -56,3 +56,16 @@ w[1]\*x[1] + w[2]\*x[2] ..... + w[n]\*x[n] + b = y
 4. Training algorithm
 5 test algorithm
 6. Use algorithm 
+
+# 1.6 Python
+Python will be the recommended language to do Machine Learning
+1. Python syntax is clearer
+2. Python is easier to deal with text file
+3. Python is widly used
+
+The main library used in this tutorial is "NumPy", this library afford a bunch of functions to deal with data or matrix.
+
+There're many different library or frameworks afford for Machine Learning, for example:
+    Tensorflow maintained by Google
+    Pytorch maintained by Facebook
+    ....
