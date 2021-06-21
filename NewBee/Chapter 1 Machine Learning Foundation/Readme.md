@@ -48,7 +48,7 @@ w[1]\*x[1] + w[2]\*x[2] ..... + w[n]\*x[n] + b = y
 2. If it is not to predict the value of the target variable, use unsupervised machine learning. If you need to divide the data set into discrete groups, use a clustering algorithm. If you need to estimate the similarity between the data and each group, you need to use density Estimate algorithm.
 
 3. The second thing to consider is the data problem: whether the characteristic value is a discrete variable or a continuous type, whether there are missing values, outliers, etc.
-4. 
+
 # 1.5 Steps for Machine Learning Development
 1. Collect data:
 2. Prepare to input data: clean data
