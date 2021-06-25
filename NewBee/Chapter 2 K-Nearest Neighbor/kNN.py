@@ -2,12 +2,7 @@
 Created on Sep 16, 2010
 kNN: k Nearest Neighbors
 
-Input:      inX: vector to compare to existing dataset (1xN)
-            dataSet: size m data set of known vectors (NxM)
-            labels: data set labels (1xM vector)
-            k: number of neighbors to use for comparison (should be an odd number)
-            
-Output:     the most popular class label
+
 
 @author: pbharrin
 '''
@@ -15,6 +10,14 @@ from numpy import *
 import operator
 from os import listdir
 
+"""
+Function used to classification the input according to the dataset.
+Input:      inX: vector to compare to existing dataset (1xN)
+            dataSet: size m data set of known vectors (NxM)
+            labels: data set labels (1xM vector)
+            k: number of neighbors to use for comparison (should be an odd number)
+Output:     the most popular class label
+"""
 def classify0(inX, dataSet, labels, k):
     dataSetSize = dataSet.shape[0]
     diffMat = tile(inX, (dataSetSize,1)) - dataSet
@@ -29,11 +32,20 @@ def classify0(inX, dataSet, labels, k):
     sortedClassCount = sorted(classCount.iteritems(), key=operator.itemgetter(1), reverse=True)
     return sortedClassCount[0][0]
 
+"""
+An Function used to create example dataset
+Output: feature matrix and label array
+"""
 def createDataSet():
     group = array([[1.0,1.1],[1.0,1.0],[0,0],[0,0.1]])
     labels = ['A','A','B','B']
     return group, labels
 
+"""
+turn data file into feature matirxs and label array
+Input: path of dataset
+Output: Feature Matrix, and Label Array
+"""
 def file2matrix(filename):
     love_dictionary={'largeDoses':3, 'smallDoses':2, 'didntLike':1}
     fr = open(filename)
@@ -53,7 +65,11 @@ def file2matrix(filename):
         index += 1
     return returnMat,classLabelVector
 
-    
+"""
+Normalize Dataset
+Input: feature matrixs
+Output: normalized feature matrixs, ranges of orignial features, minimum values of original features.
+"""
 def autoNorm(dataSet):
     minVals = dataSet.min(0)
     maxVals = dataSet.max(0)
@@ -64,6 +80,9 @@ def autoNorm(dataSet):
     normDataSet = normDataSet/tile(ranges, (m,1))   #element wise divide
     return normDataSet, ranges, minVals
    
+"""
+Testing Function for Dating Perference, will print the result for Testing dataset
+"""
 def datingClassTest():
     hoRatio = 0.50      #hold out 10%
     datingDataMat,datingLabels = file2matrix('datingTestSet2.txt')       #load data setfrom file
@@ -77,7 +96,10 @@ def datingClassTest():
         if (classifierResult != datingLabels[i]): errorCount += 1.0
     print("the total error rate is: %f" % (errorCount/float(numTestVecs)))
     print(errorCount)
-    
+
+"""
+Take features from user side and classification the user input with testing dataset
+"""
 def classifyPerson():
     resultList = ['not at all', 'in small doses', 'in large doses']
     percentTats = float(raw_input(\
@@ -91,6 +113,11 @@ def classifyPerson():
                                   minVals)/ranges, normMat, datingLabels, 3)
     print("You will probably like this person: %s" % resultList[classifierResult - 1])
     
+"""
+Turn img files (txt file) into feature matrix
+Input: img files (.txt)
+Output: feature matrix
+"""
 def img2vector(filename):
     returnVect = zeros((1,1024))
     fr = open(filename)
@@ -100,6 +127,9 @@ def img2vector(filename):
             returnVect[0,32*i+j] = int(lineStr[j])
     return returnVect
 
+"""
+Testing function for handwriting recognize
+"""
 def handwritingClassTest():
     hwLabels = []
     trainingFileList = listdir('trainingDigits')           #load the training set
