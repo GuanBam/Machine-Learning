@@ -21,18 +21,22 @@ Input:      inX: vector to compare to existing dataset (1xN)
 Output:     the most popular class label
 """
 def classify0(inX, dataSet, labels, k):
-    dataSetSize = dataSet.shape[0]
-    diffMat = tile(inX, (dataSetSize,1)) - dataSet
-    sqDiffMat = diffMat**2
-    sqDistances = sqDiffMat.sum(axis=1)
-    distances = sqDistances**0.5
-    sortedDistIndicies = distances.argsort()     
+    dataSetSize = dataSet.shape[0]                      # Get dataset length, number of training data
+                                                        # distance equation d = ((an-a)^2+(bn-b)^2+...+(zn-z)^2)^0.5
+                                                        # d: distance
+                                                        # a,b,c...,z: features(number depends on the training dataset)
+                                                        # n:features index(maximum is the amount of dataset)
+    diffMat = tile(inX, (dataSetSize,1)) - dataSet      # Calculate the difference between input feature matrixs and all training features
+    sqDiffMat = diffMat**2                              # diffMat^2
+    sqDistances = sqDiffMat.sum(axis=1)                 # Sum the diffMat^2 according to feature groups
+    distances = sqDistances**0.5                        # Caculate the distance
+    sortedDistIndicies = distances.argsort()            # Sort the distance array in increasing order(The elements with lower index, means it's more similar to the input)
     classCount={}          
-    for i in range(k):
+    for i in range(k):                                  # Tranverse the distance array, and calculate the matched label for the index
         voteIlabel = labels[sortedDistIndicies[i]]
         classCount[voteIlabel] = classCount.get(voteIlabel,0) + 1
-    sortedClassCount = sorted(classCount.items(), key=operator.itemgetter(1), reverse=True)
-    return sortedClassCount[0][0]
+    sortedClassCount = sorted(classCount.items(), key=operator.itemgetter(1), reverse=True)     # Sort the frequency dictionary in decreasing order 
+    return sortedClassCount[0][0]                       # The first label will be the best match for input
 
 """
 An Function used to create example dataset
@@ -44,23 +48,25 @@ def createDataSet():
     return group, labels
 
 """
-turn data file into feature matirxs and label array
+turn data file into feature matirxs and label array (For different file format, the way to deal with data will be different)
 Input: path of dataset
 Output: Feature Matrix, and Label Array
 """
 def file2matrix(filename):
-    love_dictionary={'largeDoses':3, 'smallDoses':2, 'didntLike':1}
-    fr = open(filename)
-    arrayOLines = fr.readlines()
-    numberOfLines = len(arrayOLines)            #get the number of lines in the file
-    returnMat = zeros((numberOfLines,3))        #prepare matrix to return
-    classLabelVector = []                       #prepare labels return   
+    love_dictionary={'largeDoses':3, 'smallDoses':2, 'didntLike':1}   # There's other method to map different labels into Number
+    fr = open(filename)                         # Open the dataset
+    arrayOLines = fr.readlines()                # Read the dataset
+    numberOfLines = len(arrayOLines)            # Get the number of lines in the file
+    returnMat = zeros((numberOfLines,3))        # Prepare matrix to return, size will be numberOfLines * 3
+    classLabelVector = []                       # Prepare labels return   
     index = 0
-    for line in arrayOLines:
-        line = line.strip()
-        listFromLine = line.split('\t')
-        returnMat[index,:] = listFromLine[0:3]
-        if(listFromLine[-1].isdigit()):
+
+    for line in arrayOLines:                    # Deal with the data line by line
+        line = line.strip()                     # Remove space at begining and end of the line
+        listFromLine = line.split('\t')         # Seperate the line with tab
+        returnMat[index,:] = listFromLine[0:3]  # Store features into feature matrix
+
+        if(listFromLine[-1].isdigit()):         # Store labels into label array
             classLabelVector.append(int(listFromLine[-1]))
         else:
             classLabelVector.append(love_dictionary.get(listFromLine[-1]))
@@ -68,31 +74,32 @@ def file2matrix(filename):
     return returnMat,classLabelVector
 
 """
-Normalize Dataset
+Normalize Dataset with scale 0~1
 Input: feature matrixs
 Output: normalized feature matrixs, ranges of orignial features, minimum values of original features.
 """
 def autoNorm(dataSet):
-    minVals = dataSet.min(0)
-    maxVals = dataSet.max(0)
-    ranges = maxVals - minVals
-    normDataSet = zeros(shape(dataSet))
-    m = dataSet.shape[0]
-    normDataSet = dataSet - tile(minVals, (m,1))
-    normDataSet = normDataSet/tile(ranges, (m,1))   #element wise divide
+    # Only the first column need to be normalized for example dating perference
+    minVals = dataSet.min(0)                    # Get minimum value 
+    maxVals = dataSet.max(0)                    # Get maximum value
+    ranges = maxVals - minVals                  # Get range
+    normDataSet = zeros(shape(dataSet))         # Initialize new feature matrixs
+    m = dataSet.shape[0]                        # m = total row number of feature matrixs
+    normDataSet = dataSet - tile(minVals, (m,1))            # minus the minium value to set new minum as 0         
+    normDataSet = normDataSet/tile(ranges, (m,1))           # Divide the ranges(ranges will be the maximum after minus) to get value between 0~1
     return normDataSet, ranges, minVals
    
 """
 Testing Function for Dating Perference, will print the result for Testing dataset
 """
 def datingClassTest():
-    hoRatio = 0.50      #hold out 10%
-    datingDataMat,datingLabels = file2matrix('datingTestSet2.txt')       #load data setfrom file
-    normMat, ranges, minVals = autoNorm(datingDataMat)
-    m = normMat.shape[0]
-    numTestVecs = int(m*hoRatio)
+    hoRatio = 0.50                                                      # Rate for testing dataset
+    datingDataMat,datingLabels = file2matrix('datingTestSet2.txt')      # Load data set from file
+    normMat, ranges, minVals = autoNorm(datingDataMat)                  # Normalize data
+    m = normMat.shape[0]                                                # Get entire data
+    numTestVecs = int(m*hoRatio)                                        # Define number for test
     errorCount = 0.0
-    for i in range(numTestVecs):
+    for i in range(numTestVecs):                                        # Pass data to test and check if the result is correct
         classifierResult = classify0(normMat[i,:],normMat[numTestVecs:m,:],datingLabels[numTestVecs:m],3)
         print("the classifier came back with: %d, the real answer is: %d" % (classifierResult, datingLabels[i]))
         if (classifierResult != datingLabels[i]): errorCount += 1.0
@@ -104,10 +111,10 @@ Take features from user side and classification the user input with testing data
 """
 def classifyPerson():
     resultList = ['not at all', 'in small doses', 'in large doses']
-    percentTats = float(raw_input(\
+    percentTats = float(input(\
                                   "percentage of time spent playing video games?"))
-    ffMiles = float(raw_input("frequent flier miles earned per year?"))
-    iceCream = float(raw_input("liters of ice cream consumed per year?"))
+    ffMiles = float(input("frequent flier miles earned per year?"))
+    iceCream = float(input("liters of ice cream consumed per year?"))
     datingDataMat, datingLabels = file2matrix('datingTestSet2.txt')
     normMat, ranges, minVals = autoNorm(datingDataMat)
     inArr = array([ffMiles, percentTats, iceCream, ])
@@ -134,21 +141,21 @@ Testing function for handwriting recognize
 """
 def handwritingClassTest():
     hwLabels = []
-    trainingFileList = listdir('trainingDigits')           #load the training set
+    trainingFileList = listdir('trainingDigits')            # Load the training dataset
     m = len(trainingFileList)
     trainingMat = zeros((m,1024))
-    for i in range(m):
+    for i in range(m):                                      # Process training data
         fileNameStr = trainingFileList[i]
-        fileStr = fileNameStr.split('.')[0]     #take off .txt
+        fileStr = fileNameStr.split('.')[0]     
         classNumStr = int(fileStr.split('_')[0])
         hwLabels.append(classNumStr)
         trainingMat[i,:] = img2vector('trainingDigits/%s' % fileNameStr)
-    testFileList = listdir('testDigits')        #iterate through the test set
+    testFileList = listdir('testDigits')                    # Load the testing dataset
     errorCount = 0.0
     mTest = len(testFileList)
-    for i in range(mTest):
+    for i in range(mTest):                                  # Process testing data and check the result for each case
         fileNameStr = testFileList[i]
-        fileStr = fileNameStr.split('.')[0]     #take off .txt
+        fileStr = fileNameStr.split('.')[0]     
         classNumStr = int(fileStr.split('_')[0])
         vectorUnderTest = img2vector('testDigits/%s' % fileNameStr)
         classifierResult = classify0(vectorUnderTest, trainingMat, hwLabels, 3)
