@@ -4,7 +4,7 @@
 Get key information from unordered data and lead to the meaning of these data.
 
 # 1.2 Terms
-
+Equation(For most case):
 w[1]\*x[1] + w[2]\*x[2] ..... + w[n]\*x[n] + b = y
 
 ### 1. Features
