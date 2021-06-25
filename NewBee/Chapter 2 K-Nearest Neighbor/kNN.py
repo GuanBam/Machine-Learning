@@ -1,10 +1,12 @@
 '''
 Created on Sep 16, 2010
 kNN: k Nearest Neighbors
-
-
-
+@Python Version: 2
 @author: pbharrin
+
+Updated and Commented on Jun 24,2021
+@Python Version: 3.7.4
+@author: GuanBam
 '''
 from numpy import *
 import operator
@@ -29,7 +31,7 @@ def classify0(inX, dataSet, labels, k):
     for i in range(k):
         voteIlabel = labels[sortedDistIndicies[i]]
         classCount[voteIlabel] = classCount.get(voteIlabel,0) + 1
-    sortedClassCount = sorted(classCount.iteritems(), key=operator.itemgetter(1), reverse=True)
+    sortedClassCount = sorted(classCount.items(), key=operator.itemgetter(1), reverse=True)
     return sortedClassCount[0][0]
 
 """
