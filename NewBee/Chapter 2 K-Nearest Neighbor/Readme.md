@@ -88,3 +88,10 @@ This Function will take pre-assigned data as traning dataset and check the accur
 """
 handwritingClassTest()
 ```
+
+# 2.4 Conculsion
+* KNN is one simplest algorithm to classify data.
+* KNN is one learning method based on real instance.
+* KNN has to store all dataset, more memory will be needed when using large scale training dataset.
+* KNN has to calculate distance to all points, time complex will be high.
+* KNN not able to basic construction information of the data, which means has no weight for features, so user can't tell which feature is more important.
