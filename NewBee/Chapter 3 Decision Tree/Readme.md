@@ -109,4 +109,89 @@ def chooseBestFeatureToSplit(dataSet):
             bestFeature = i
     return bestFeature
 ```
+## 3.1.3 Building the Decision Tree
+Recursion will be used to splitting data until run out of features for splitting or all data in a branch are the same class.
+```Python
+import operator
 
+# count the number of class occurred
+def majorityCnt(classList):
+    classCount = {}
+    for vote in classCount.keys():
+        if vote not in classCount:
+            classCount[vote]=0
+        else:
+            classCount[vote]+=1
+    # sort the dict in decreasing order
+    sortedClassCount = sorted(classCount.items(), key=operator.itemgetter(1),reverse=True)
+    return sortedClassCount
+
+# make the decision tree according to input dataset and labels
+def createTree(dataSet,labels):
+    classList = [example[-1] for example in dataSet]
+    # Base Line
+    # if there's only one class left
+    if classList.count(classList[0]) == len(classList):
+        return classList[0]
+    # if there's only one feature left
+    if len(dataSet[0]) == 1:
+        return majorityCnt(classList)
+        
+    # find the best feature for splitting
+    bestFeat = chooseBestFeatureToSplit(dataSet)
+    bestFeatLabel = labels[bestFeat]
+    myTree = {bestFeatLabel:{}}
+    del(labels[bestFeat])
+    # get all possible values for best feature
+    featValues = [example[bestFeat] for example in dataSet]
+    uniqueVals = set(featValues)
+    # recursively building the tree
+    for value in uniqueVals:
+        subLabels = labels[:]
+        myTree[bestFeatLabel][value] = createTree(splitDataSet(dataSet,bestFeat,value),subLabels)
+    return myTree
+```
+## 3.2 Plot to show the tree
+"Matplotlib" library can be used to help show of the tree. Codes is given but won't show here, since it's just used to help understand the process but not necessary for this algorithm.
+
+## 3.3 Testing and storing the classifier
+### 3.3.1 Test: using the tree for classification
+```Python
+# The inputTree could be a nested tree
+def classify(inputTree,featLabels,testVec):
+    firstStr = inputTree.keys()[0]
+    secondDict = inputTree[firstStr]
+    # find the feature index according to the given decision tree
+    featIndex = featLabels.index(firstStr)
+    for key in secondDict.keys():
+        if testVec[featIndex] == key:
+            # The inputTree could be a nested dict
+            # if the type of the value of the key is "dict", then we need go to next level of tree 
+            if type(secondDict[key]).__name__=="dict":
+                classLabel = classify(secondDict[key],featLabels,testVec)
+            # else we just finished the classification
+            else:
+                classLabel = secondDict[key]
+    return classLabel
+```
+### 3.3.2 Use: persisting the decision tree
+Store the tree will help decrease the time for classification, sine you don't have to find the decision tree each time according to the same training dataset.
+With "pickle" library, we can read and store the data set("json" should able to do the same thing).
+```Python
+def storeTree(inputTree,filename):
+    import pickle
+    f = open(filename,"w")
+    pickle.dump(inputTree,f)
+    f.close()
+    
+def grabTree(filename):
+    import pickle
+    f = open(filename)
+    return pickle.load(f)
+```
+## 3.4 Example: predict contact lens type
+Follow the step as the code given before
+. Collect and prepare: Text file provided.
+. Train: with createTree() function.
+. Test: with a given instance.
+. Use: persist the tree data structure for next using.
