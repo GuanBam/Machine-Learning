@@ -29,4 +29,5 @@ The change in information before and after the split is known as the Information
 
 ## How to calculate the Information Gain
 If clssifying something that can take on multiple values, the information for symbol xi is defined as:
+$x_i$
 $$ l(x_i) = log_2P(x_i) $$
