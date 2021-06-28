@@ -22,3 +22,11 @@ def createBranch():
       createBranch(each)
     return brach node
 ```
+# 3.1.1 Information Gain (Entropy)
+The key for this algorithm is how to split the dataset to make the unorganized data more organized.
+In "Machine Learning In Action", the author introduced the method of measuring the information.
+The change in information before and after the split is known as the Information Gain. Information Gain is based on quantifiable information, user may consider about which feature will have more weight in determing the class of the data and that will be consider as has higher information gain.
+
+## How to calculate the Information Gain
+If clssifying something that can take on multiple values, the information for symbol xi is defined as:
+$$l(x_i) = log_2P(x_i)$$
