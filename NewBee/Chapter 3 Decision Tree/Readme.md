@@ -2,8 +2,11 @@
 Decision tree do not required too much knowledge of machine learning.
 Basic concept of Decision Tree is judge the data one step by one step.
 
-Pros: Not complex, easy to understand the result, do not senstive to missing values, able to deal with non-relevant features.
+Pros: Not complex, the result is easy to understand, not senstive to missing values, able to deal with non-relevant features.
 Cons: May overfitting
+
+The idea is, for a certain feature, it may decide the class of the instance.
+For example: Consider we have a vechical. If it with four wheels, it will much more likely to be a car. If it with two wheels, it could be a motorcycle or bicycle, and we will need other feature to decide what it will be. So the first step will be check if it got four wheels, if yes, then we can consider it is a car, if not, we go to next step and find next feature to figure out what it is.
 
 # 3.1 Algorithm Logic
 . user need figure out which feature is used to split the data.
