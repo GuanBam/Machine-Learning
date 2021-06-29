@@ -180,13 +180,13 @@ With "pickle" library, we can read and store the data set("json" should able to 
 ```Python
 def storeTree(inputTree,filename):
     import pickle
-    f = open(filename,"w")
+    f = open(filename,'wb')
     pickle.dump(inputTree,f)
     f.close()
     
 def grabTree(filename):
     import pickle
-    f = open(filename)
+    f = open(filename,'rb')
     return pickle.load(f)
 ```
 ## 3.4 Example: predict contact lens type
