@@ -2,6 +2,8 @@
 Created on Oct 14, 2010
 
 @author: Peter Harrington
+
+Note by GuanBam: Based on Python 2, some function may need modified for Python 3
 '''
 import matplotlib.pyplot as plt
 
