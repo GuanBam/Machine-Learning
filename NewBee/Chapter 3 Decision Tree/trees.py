@@ -157,7 +157,7 @@ Output: class of input X
 """
 def classify(inputTree,featLabels,testVec):
     # get the first feature label in inputTree
-    firstStr = inputTree.keys()[0]
+    firstStr = list(inputTree.keys())[0]
     # get the nested tree with key of first feature label
     secondDict = inputTree[firstStr]
     # get feature index
@@ -182,7 +182,7 @@ Input: Decision Tree, and expected filename
 """
 def storeTree(inputTree,filename):
     import pickle
-    fw = open(filename,'w')
+    fw = open(filename,'wb')
     pickle.dump(inputTree,fw)
     fw.close()
 
@@ -193,6 +193,6 @@ Output:Decision Tree
 """
 def grabTree(filename):
     import pickle
-    fr = open(filename)
+    fr = open(filename,'rb')
     return pickle.load(fr)
     
