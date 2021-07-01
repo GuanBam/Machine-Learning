@@ -139,4 +139,45 @@ def trainNB0(trainMatrix, trainCategory):
     p0Vect = p0Num/p0Denom
     return p0Vect,p1Vect,pAbusive
 ```
-## 4.5.3 Problems will occurr
+## 4.5.3 Test: For real-world conditions
+### Problem 1: 0 in multiplier
+when initialize p0Num and p1Num, zeros() function is used, in this case, if there's any words occured 0 times, the final multiple result will be 0.
+So it will be better to use ones() function, and set p0Denom, p1Denom start with 2.
+```Python
+# reinitialize variable
+p0Num = ones(numWords)
+p1Num = ones(numWords)
+p0Denom = 2.0
+p1Denom = 2.0
+```
+### Problem 2: Underflow
+When the data amount is large, the probability for each word could be extremely low that will be show as 0. Then it will back to the problem 1.
+To solve this problem, natural logarithm could be used. Consider ln(a*b) = ln(a) + ln(b), we can turn the product of probability for each words into the sum of log for probability of each words.
+```Python
+p1Vect = log(p1Num/p1Denom)
+p0Vect = log(p0Num/P0Denom)
+```
+### Read for test
+```Python
+def classifyNB(vec2Classify, p0Vec, p1Vec, pClass1):
+    p1 = sum(vec2Classify * p1Vec) + log(pClass1)    #element-wise mult
+    p0 = sum(vec2Classify * p0Vec) + log(1.0 - pClass1)
+    if p1 > p0:
+        return 1
+    else: 
+        return 0
+        
+def testingNB():
+    listOPosts,listClasses = loadDataSet()
+    myVocabList = createVocabList(listOPosts)
+    trainMat=[]
+    for postinDoc in listOPosts:
+        trainMat.append(setOfWords2Vec(myVocabList, postinDoc))
+    p0V,p1V,pAb = trainNB0(array(trainMat),array(listClasses))
+    testEntry = ['love', 'my', 'dalmation']
+    thisDoc = array(setOfWords2Vec(myVocabList, testEntry))
+    print(testEntry,'classified as: ',classifyNB(thisDoc,p0V,p1V,pAb))
+    testEntry = ['stupid', 'garbage']
+    thisDoc = array(setOfWords2Vec(myVocabList, testEntry))
+    print(testEntry,'classified as: ',classifyNB(thisDoc,p0V,p1V,pAb))
+```
