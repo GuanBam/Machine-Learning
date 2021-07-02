@@ -79,7 +79,7 @@ def createVocabList(dataSet):
 """
 Check the if any words of unique word array occurred in input
 Input: Unique word array, Test Data
-Output: Word occurred situation
+Output: Words occurred situation
 """
 def setOfWords2Vec(vocabList, inputSet):
     returnVec = [0]*len(vocabList)
@@ -157,16 +157,29 @@ To solve this problem, natural logarithm could be used. Consider ln(a*b) = ln(a)
 p1Vect = log(p1Num/p1Denom)
 p0Vect = log(p0Num/P0Denom)
 ```
-### Read for test
+### Ready for test
+Now we need to calculate P(c1|w) and P(c0|w).
+As mentioned before, the equation is ![3](http://latex.codecogs.com/svg.latex?P(c_i|w)=\frac{P(w|c_i)P(c_i)}{P(w)}).
+since P(w) will be the same, we just need to compare the result P(w|ci)P(ci).
+The probability has go through natural logarithm, here the product will be replaced by plus. 
 ```Python
+"""
+classify the given words
+Input: Word array, p0Vec = P(wi|c0) array, p1Vec = P(wi|C1) array, probability of class 1
+Output: class
+"""
 def classifyNB(vec2Classify, p0Vec, p1Vec, pClass1):
-    p1 = sum(vec2Classify * p1Vec) + log(pClass1)    #element-wise mult
+    #Calculate P1 and P0
+    p1 = sum(vec2Classify * p1Vec) + log(pClass1)
     p0 = sum(vec2Classify * p0Vec) + log(1.0 - pClass1)
     if p1 > p0:
         return 1
     else: 
         return 0
         
+"""
+Testing the given words
+"""
 def testingNB():
     listOPosts,listClasses = loadDataSet()
     myVocabList = createVocabList(listOPosts)
@@ -180,4 +193,79 @@ def testingNB():
     testEntry = ['stupid', 'garbage']
     thisDoc = array(setOfWords2Vec(myVocabList, testEntry))
     print(testEntry,'classified as: ',classifyNB(thisDoc,p0V,p1V,pAb))
+```
+# 4.5.4 Prepare: the bag-of-words document model
+In previous codes, only record if a word occurred. Now turn it into record how many times a word occurred, to make the result more accurate.
+```Python
+"""
+Similar with function setOfWords2Vec(vocabList, inputSet)
+"""
+def bagOfWords2VecMN(vocabList, inputSet):
+    returnVec = [0]*len(vocabList)
+    for word in inputSet:
+        if word in vocabList:
+            returnVec[vocabList.index(word)] += 1
+    return returnVec
+```
+# 4.6 Example: classifying spam email with Naïve Bayes
+# 4.6.1 Prepare: tokens, data process
+You can check it in book if you interested, basiclly, it's about how to split string and remove empty tokens.
+# 4.6.2 Test:
+regulartion expression is used to process string.[Python Regulartion Expression Document](https://docs.python.org/3/library/re.html).
+```Python
+def textParse(bigString):
+    import re
+    # split data based on all none alphabet, none nums, none uder line characters.
+    listOfTokens = re.split(r'\W',bigString)
+    # return tokens longer than 2 in lower cases
+    return [tok.lower() for tok in listOfTokens if len(tok) > 2 ]
+
+def spamTest():
+    docList=[]
+    classList = []
+    fullText =[]
+    # Here the range is the name of file, both of spam and ham are from 1-25
+    for i in range(1,26):
+        wordList = textParse(open('email/spam/%d.txt' % i).read())
+        docList.append(wordList)
+        fullText.extend(wordList)
+        classList.append(1)
+        wordList = textParse(open('email/ham/%d.txt' % i).read())
+        docList.append(wordList)
+        fullText.extend(wordList)
+        classList.append(0)
+    #create vocabulary
+    vocabList = createVocabList(docList)
+    trainingSet = list(range(50))
+    testSet=[]           #create test set
+    # Take ten instance as testing dataset, here just generate the random index
+    for i in range(10):
+        randIndex = int(random.uniform(0,len(trainingSet)))
+        testSet.append(trainingSet[randIndex])
+        del(trainingSet[randIndex])  
+    trainMat=[]
+    trainClasses = []
+    #train the classifier (get probs) trainNB0
+    for docIndex in trainingSet:
+        trainMat.append(bagOfWords2VecMN(vocabList, docList[docIndex]))
+        trainClasses.append(classList[docIndex])
+    p0V,p1V,pSpam = trainNB0(array(trainMat),array(trainClasses))
+    errorCount = 0
+    #classify the testing set
+    for docIndex in testSet:        
+        wordVector = bagOfWords2VecMN(vocabList, docList[docIndex])
+        if classifyNB(array(wordVector),p0V,p1V,pSpam) != classList[docIndex]:
+            errorCount += 1
+            print("classification error",docList[docIndex])
+    print('the error rate is: ',float(errorCount)/len(testSet))
+    #return vocabList,fullText
+```
+# 4.7 Example: using Naïve Bayes to reveal local attitudes from personal ads
+The link author given seems not working anymore, you may have a test with it. The code is in the given "bayes.py" file.
+Below is the rss link given by author and code to call the function.
+```Python
+import feedparser
+ny = feedparser.parse('http://newyork.craigslist.org/stp/index.rss')
+sf = feedparser.parse('http://sfbay.craigslist.org/stp/index.rss')
+vocabList,psF,pNY = localWords(ny,sf)
 ```
